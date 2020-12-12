@@ -1,0 +1,374 @@
+-- phpMyAdmin SQL Dump
+-- version 4.9.5
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:8889
+-- Generation Time: Dec 11, 2020 at 05:53 PM
+-- Server version: 5.7.30
+-- PHP Version: 7.4.9
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `QuizApplication`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `answer`
+--
+
+CREATE TABLE `answer` (
+  `answerId` int(11) NOT NULL,
+  `questionId` int(11) DEFAULT NULL,
+  `answerContent` varchar(1000) NOT NULL,
+  `isCorrect` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `answer`
+--
+
+INSERT INTO `answer` (`answerId`, `questionId`, `answerContent`, `isCorrect`) VALUES
+(25, 9, 'SELECT', 1),
+(26, 9, 'OPEN', 0),
+(27, 9, 'EXTRACT', 0),
+(28, 9, 'GET', 0),
+(29, 10, 'INSERT NEW', 0),
+(30, 10, ' INSERT INTO', 1),
+(31, 10, 'ADD RECORD', 0),
+(32, 10, 'ADD NEW', 0),
+(33, 11, 'SELECT * FROM Persons WHERE FIRSTNAME <> ‘Peter’', 0),
+(34, 11, 'SELECT [all] FROM Person WHERE FirstName = ‘Peter’', 0),
+(35, 11, 'SELECT * FROM Persons WHERE FirstName = ‘Peter’', 1),
+(36, 11, 'SELECT [all] FROM Person WHERE FirstName LIKE ‘Peter’', 0),
+(42, 14, 'System.out.println(\"Hello World\");', 1),
+(43, 14, 'print(\"Hello World\");', 0),
+(44, 14, 'echo(\"Hello World\");', 0),
+(45, 15, 'True', 0),
+(46, 15, 'False', 1),
+(47, 16, '// This is a comment', 1),
+(48, 16, '# This is a comment', 0),
+(49, 16, '* This is a comment', 0),
+(50, 17, 'cout <<\"Hello World\";', 1),
+(51, 17, 'print(\"Hello world\");', 0),
+(52, 17, 'echo \"Hello World\";', 0),
+(53, 18, 'True', 0),
+(54, 18, 'False', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `question`
+--
+
+CREATE TABLE `question` (
+  `questionId` int(11) NOT NULL,
+  `quizId` int(11) DEFAULT NULL,
+  `questionContent` varchar(1000) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `question`
+--
+
+INSERT INTO `question` (`questionId`, `quizId`, `questionContent`) VALUES
+(9, 4, 'Which SQL statement is used to extract data from a database?'),
+(10, 4, 'Which SQL statement is used to insert new data in a database?'),
+(11, 4, 'With SQL, how do you select all the records from a table named “Persons” where the value of the column “FirstName” is “Peter”?'),
+(14, 6, 'What is a correct syntax to output \"Hello World\" in Java?'),
+(15, 6, 'Java is short for \"JavaScript\".'),
+(16, 6, 'How do you insert A COMMENT in Java code?'),
+(17, 7, 'What is a correct syntax to output \"Hello World\" in C++?'),
+(18, 7, 'C++ is an alias of C#');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quiz`
+--
+
+CREATE TABLE `quiz` (
+  `staffId` int(11) DEFAULT NULL,
+  `quizId` int(11) NOT NULL,
+  `quizName` varchar(100) NOT NULL,
+  `quizAuthor` varchar(100) NOT NULL,
+  `quizDuration` int(11) UNSIGNED NOT NULL,
+  `quizAvailability` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `quiz`
+--
+
+INSERT INTO `quiz` (`staffId`, `quizId`, `quizName`, `quizAuthor`, `quizDuration`, `quizAvailability`) VALUES
+(7, 4, 'SQL', 'John ', 60, 1),
+(7, 6, 'Java Quiz', 'John ', 30, 1),
+(7, 7, 'C++', 'John ', 30, 1);
+
+--
+-- Triggers `quiz`
+--
+DELIMITER $$
+CREATE TRIGGER `before_delete_quiz` BEFORE DELETE ON `quiz` FOR EACH ROW INSERT INTO quiz_deletion
+SET staffId = OLD.staffId,
+	quizId = OLD.quizId
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quiz_deletion`
+--
+
+CREATE TABLE `quiz_deletion` (
+  `staffId` int(11) DEFAULT NULL,
+  `quizId` int(11) DEFAULT NULL,
+  `deletionDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `quiz_deletion`
+--
+
+INSERT INTO `quiz_deletion` (`staffId`, `quizId`, `deletionDate`) VALUES
+(6, 1, '2020-12-11 11:31:34'),
+(8, 5, '2020-12-11 17:03:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff`
+--
+
+CREATE TABLE `staff` (
+  `userId` int(11) NOT NULL,
+  `userFirstname` varchar(100) NOT NULL,
+  `userLastname` varchar(100) NOT NULL,
+  `userEmail` varchar(100) NOT NULL,
+  `userPassword` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `staff`
+--
+
+INSERT INTO `staff` (`userId`, `userFirstname`, `userLastname`, `userEmail`, `userPassword`) VALUES
+(6, 'Daniel', 'Johnson', 'danieljohnson@manchester.ac.uk', '$2y$10$ZqISHPqzDxJRnqsIjgs5V.VVIvG4S94lrP3Gdmu7NTUdW3LILiPx.'),
+(7, 'John', 'Doe', 'johndoe@manchester.ac.uk', '$2y$10$MWzzA7ammrzj5BcL8hWmHeJKq7GRcy/3XbaA.JA6x6gHZQcQ5bDlC'),
+(8, 'Dan', 'Aaron', 'danaaron@manchester.ac.uk', '$2y$10$60BvwM0SwS7AZZD9KBpkW.UD0T/WQfD4gcuDZONro.HET.vWADPfK');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_score`
+--
+
+CREATE TABLE `staff_score` (
+  `scoreId` int(11) NOT NULL,
+  `quizId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `result` int(11) NOT NULL,
+  `maximumResult` int(11) NOT NULL,
+  `dateOfAttempt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `staff_score`
+--
+
+INSERT INTO `staff_score` (`scoreId`, `quizId`, `userId`, `result`, `maximumResult`, `dateOfAttempt`) VALUES
+(1, 4, 7, 2, 3, '2020-12-11 15:22:08'),
+(2, 4, 7, 2, 3, '2020-12-11 15:27:07'),
+(3, 7, 7, 2, 2, '2020-12-11 17:49:57');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student`
+--
+
+CREATE TABLE `student` (
+  `userId` int(11) NOT NULL,
+  `userFirstname` varchar(100) NOT NULL,
+  `userLastname` varchar(100) NOT NULL,
+  `userEmail` varchar(100) NOT NULL,
+  `userPassword` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `student`
+--
+
+INSERT INTO `student` (`userId`, `userFirstname`, `userLastname`, `userEmail`, `userPassword`) VALUES
+(1, 'Daniel', 'Fox', 'danielfox@student.manchester.ac.uk', '$2y$10$BLIBsRvrwXcumFt9wZ7d0ORA.YWdaZkU5pIZx0p5ZV9HRxSF73eE6');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_score`
+--
+
+CREATE TABLE `student_score` (
+  `scoreId` int(11) NOT NULL,
+  `quizId` int(11) DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `result` int(11) NOT NULL,
+  `maximumResult` int(11) NOT NULL,
+  `dateOfAttempt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `student_score`
+--
+
+INSERT INTO `student_score` (`scoreId`, `quizId`, `userId`, `result`, `maximumResult`, `dateOfAttempt`) VALUES
+(1, 4, 1, 3, 3, '2020-12-11 15:47:50'),
+(2, 4, 1, 3, 3, '2020-12-11 15:58:11'),
+(3, 4, 1, 3, 3, '2020-12-11 15:58:28'),
+(4, 4, 1, 1, 3, '2020-12-11 15:59:49'),
+(5, 4, 1, 0, 3, '2020-12-11 16:04:08'),
+(6, 7, 1, 0, 2, '2020-12-11 17:50:59'),
+(7, 6, 1, 2, 3, '2020-12-11 17:51:10'),
+(8, 6, 1, 1, 3, '2020-12-11 17:52:12'),
+(9, 7, 1, 0, 2, '2020-12-11 17:53:00');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `answer`
+--
+ALTER TABLE `answer`
+  ADD PRIMARY KEY (`answerId`),
+  ADD KEY `questionId` (`questionId`);
+
+--
+-- Indexes for table `question`
+--
+ALTER TABLE `question`
+  ADD PRIMARY KEY (`questionId`),
+  ADD KEY `quizId` (`quizId`);
+
+--
+-- Indexes for table `quiz`
+--
+ALTER TABLE `quiz`
+  ADD PRIMARY KEY (`quizId`),
+  ADD KEY `staffId` (`staffId`);
+
+--
+-- Indexes for table `staff`
+--
+ALTER TABLE `staff`
+  ADD PRIMARY KEY (`userId`),
+  ADD UNIQUE KEY `userEmail` (`userEmail`);
+
+--
+-- Indexes for table `staff_score`
+--
+ALTER TABLE `staff_score`
+  ADD PRIMARY KEY (`scoreId`),
+  ADD KEY `quizId` (`quizId`),
+  ADD KEY `userId` (`userId`);
+
+--
+-- Indexes for table `student`
+--
+ALTER TABLE `student`
+  ADD PRIMARY KEY (`userId`),
+  ADD UNIQUE KEY `userEmail` (`userEmail`);
+
+--
+-- Indexes for table `student_score`
+--
+ALTER TABLE `student_score`
+  ADD PRIMARY KEY (`scoreId`),
+  ADD KEY `quizId` (`quizId`),
+  ADD KEY `userId` (`userId`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `answer`
+--
+ALTER TABLE `answer`
+  MODIFY `answerId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+
+--
+-- AUTO_INCREMENT for table `question`
+--
+ALTER TABLE `question`
+  MODIFY `questionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `quiz`
+--
+ALTER TABLE `quiz`
+  MODIFY `quizId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `staff`
+--
+ALTER TABLE `staff`
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `staff_score`
+--
+ALTER TABLE `staff_score`
+  MODIFY `scoreId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `student`
+--
+ALTER TABLE `student`
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `student_score`
+--
+ALTER TABLE `student_score`
+  MODIFY `scoreId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `answer`
+--
+ALTER TABLE `answer`
+  ADD CONSTRAINT `answer_ibfk_1` FOREIGN KEY (`questionId`) REFERENCES `question` (`questionId`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `question`
+--
+ALTER TABLE `question`
+  ADD CONSTRAINT `question_ibfk_1` FOREIGN KEY (`quizId`) REFERENCES `quiz` (`quizId`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `quiz`
+--
+ALTER TABLE `quiz`
+  ADD CONSTRAINT `quiz_ibfk_1` FOREIGN KEY (`staffId`) REFERENCES `staff` (`userId`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff_score`
+--
+ALTER TABLE `staff_score`
+  ADD CONSTRAINT `staff_score_ibfk_1` FOREIGN KEY (`quizId`) REFERENCES `quiz` (`quizId`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_score_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `staff` (`userId`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `student_score`
+--
+ALTER TABLE `student_score`
+  ADD CONSTRAINT `student_score_ibfk_1` FOREIGN KEY (`quizId`) REFERENCES `quiz` (`quizId`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_score_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `student` (`userId`) ON DELETE CASCADE;
